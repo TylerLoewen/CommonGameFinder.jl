@@ -1,5 +1,12 @@
 module CommonGameFinder
 
-# Write your package code here.
+using HTTP
+using Memento
 
-end
+const LOGGER = getlogger(@__MODULE__)
+
+export hello
+
+include("main.jl")
+
+end # module
