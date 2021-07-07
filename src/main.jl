@@ -1,16 +1,16 @@
-calculate_shared_games(game_ids::Tuple{Vararg{Set{Integer}}}) = intersect(game_ids...)
+calculate_shared_games(game_ids::Tuple{Vararg{Set{AbstractString}}}) = intersect(game_ids...)
 
-function get_owned_game_ids(steam_account_id::Integer)::Set{Integer}
+function get_owned_game_ids(steam_account_id::Integer)::Set{AbstractString}
 
     api_key = secrets["API_KEY"]
 
-    r = HTTP.request("GET", "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steam_account_id&format=$format")
+    r = HTTP.request("GET", "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steam_account_id&format=$format&include_appinfo=true")
     info(LOGGER, "Status: $(r.status)" )
     response = JSON3.read(r.body).response
 
-    owned_games = Set{Integer}()
+    owned_games = Set{AbstractString}()
     for game in response.games
-        push!(owned_games, game.appid)
+        push!(owned_games, game.name)
     end
 
     return owned_games
