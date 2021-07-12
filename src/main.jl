@@ -1,35 +1,48 @@
-calculate_shared_games(game_ids::Tuple{Vararg{Set{AbstractString}}}) = intersect(game_ids...)
+function common_games_appids(games::Tuple{Vararg{JSON3.Object}})::Set{Integer}
 
-function get_owned_game_ids(steam_account_id::Integer)::Set{AbstractString}
+    games_appids = map(game_appids, games)
+    common_game_appids = intersect(games_appids...)
+
+    return common_game_appids
+
+end
+
+function owned_games(steam_account_id::Integer)::JSON3.Object
 
     api_key = secrets["API_KEY"]
 
     r = HTTP.request("GET", "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steam_account_id&format=$format&include_appinfo=true")
     info(LOGGER, "Status: $(r.status)" )
-    response = JSON3.read(r.body).response
-
-    owned_games = Set{AbstractString}()
-    for game in response.games
-        push!(owned_games, game.name)
-    end
+    owned_games = JSON3.read(r.body).response
 
     return owned_games
 
 end
 
+function game_appids(owned_games::JSON3.Object)::Set{Integer}
+
+    game_appids = Set{Integer}()
+    for game in owned_games.games
+        push!(game_appids, game.appid)
+    end
+
+    return game_appids
+
+end
+
 function main()
 
-    acc_1 = get_owned_game_ids(Integer(secrets["STEAM_ACCOUNT_ID_1"]))
-    acc_2 = get_owned_game_ids(Integer(secrets["STEAM_ACCOUNT_ID_2"]))
-    acc_3 = get_owned_game_ids(Integer(secrets["STEAM_ACCOUNT_ID_3"]))
-    acc_4 = get_owned_game_ids(Integer(secrets["STEAM_ACCOUNT_ID_4"]))
+    owned_games_1 = owned_games(Integer(secrets["STEAM_ACCOUNT_ID_1"]))
+    owned_games_2 = owned_games(Integer(secrets["STEAM_ACCOUNT_ID_2"]))
+    owned_games_3 = owned_games(Integer(secrets["STEAM_ACCOUNT_ID_3"]))
+    owned_games_4 = owned_games(Integer(secrets["STEAM_ACCOUNT_ID_4"]))
 
-    common_games = calculate_shared_games((acc_1, acc_2, acc_3, acc_4))
+    common_appids = common_games_appids(
+        (owned_games_1, owned_games_2, owned_games_3, owned_games_4)
+    )
 
-    println("Shared games:")
-
-    for game in common_games
-        println(game)
+    for appid in common_appids
+        println(appid)
     end
 
 end
