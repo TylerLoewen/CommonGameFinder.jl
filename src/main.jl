@@ -1,9 +1,9 @@
 function get_owned_games(steamid::Integer)::JSON3.Array
-    api_key = secrets["API_KEY"]
+    api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
         "GET",
-        "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steamid&format=$format&include_appinfo=true",
+        "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steamid&format=$RESPONSE_FORMAT&include_appinfo=true",
     )
     info(LOGGER, "Status: $(r.status)")
     owned_games = JSON3.read(r.body).response.games
@@ -12,7 +12,7 @@ function get_owned_games(steamid::Integer)::JSON3.Array
 end
 
 function get_friend_list(steamid::Integer)::JSON3.Array
-    api_key = secrets["API_KEY"]
+    api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
         "GET",
@@ -25,7 +25,7 @@ function get_friend_list(steamid::Integer)::JSON3.Array
 end
 
 function get_player_summaries(steamids::Vector{Integer})::JSON3.Array
-    api_key = secrets["API_KEY"]
+    api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
         "GET",
@@ -72,44 +72,4 @@ function friend_names(friend_list::JSON3.Array)::Vector{AbstractString}
     end
 
     return friend_names
-end
-
-# TODO? Use GetFriendList to get steam ids of all friends and then use GetPlayerSummaries to
-# get the persona names of all friends. Display these names to user so they can choose which
-# friends to find common games for
-function main()
-
-    # Get common appids of games between multiple accounts
-    owned_games_1 = get_owned_games(Integer(secrets["STEAM_ACCOUNT_ID_1"]))
-    owned_games_2 = get_owned_games(Integer(secrets["STEAM_ACCOUNT_ID_2"]))
-    owned_games_3 = get_owned_games(Integer(secrets["STEAM_ACCOUNT_ID_3"]))
-    owned_games_4 = get_owned_games(Integer(secrets["STEAM_ACCOUNT_ID_4"]))
-
-    common_appids = get_common_games_appids((
-        owned_games_1, owned_games_2, owned_games_3, owned_games_4
-    ))
-
-    println("Common game id's:")
-    for appid in common_appids
-        println(appid)
-    end
-
-    # Get list of friends steamids
-    friends = get_friend_list(Integer(secrets["STEAM_ACCOUNT_ID_1"]))
-
-    friend_steamids_list = friend_steamids(friends)
-
-    println("Account 1's friends:")
-    for friend_steamid in friend_steamids_list
-        println(friend_steamid)
-    end
-
-    # Get list of friends names
-    player_summaries =  get_player_summaries(friend_steamids_list)
-    names = friend_names(player_summaries)
-
-    println("Account 1's friend names:")
-    for name in names
-        println(name)
-    end
 end
