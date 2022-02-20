@@ -1,30 +1,25 @@
-using .Model
+module Client
 
-function get_owned_games(steamid::Int64)::Games
+using HTTP
+using JSON3
+using YAML
+
+using ..Service
+using ..Model
+
+const SECRETS = YAML.load_file("./secrets.yaml")
+const RESPONSE_FORMAT = "json"
+
+function getOwnedGames(steamid::Int64)
     api_key = SECRETS["API_KEY"]
 
-    r = HTTP.request(
+    res = HTTP.request(
         "GET",
         "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=$api_key&steamid=$steamid&format=$RESPONSE_FORMAT&include_appinfo=true",
     )
-    info(LOGGER, "Status: $(r.status)")
 
-    response = JSON3.read(r.body).response
-
-    # Handle an account with no games
-    games = if !isempty(response) && !isempty(response.games)
-        tmp_games = Dict{Int64,Game}()
-
-        for game in response.games
-            tmp_games[game.appid] = Game(game.appid, game.name, game.playtime_forever)
-        end
-
-        return Games(steamid, tmp_games)
-    else
-        return Games(steamid)
-    end
-
-    return games
+    # We only care about the body, not any headers
+    return JSON3.read(res.body).response
 end
 
 function get_friend_list(steamid::Int64)::JSON3.Array
@@ -34,7 +29,7 @@ function get_friend_list(steamid::Int64)::JSON3.Array
         "GET",
         "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=$api_key&steamid=$steamid&relationship=friend",
     )
-    info(LOGGER, "Status: $(r.status)")
+
     friends = JSON3.read(r.body).friendslist.friends
 
     # println("Friends: $friends")
@@ -48,9 +43,13 @@ function get_player_summaries(steamids::Vector{Int64})::JSON3.Array
         "GET",
         "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=$api_key&steamids=$(join(steamids, ","))",
     )
-    info(LOGGER, "Status: $(r.status)")
+
     player_summaries = JSON3.read(r.body).response.players
 
     # println("player_summaries: $player_summaries")
     return player_summaries
 end
+
+
+
+end # module
