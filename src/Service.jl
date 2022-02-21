@@ -17,17 +17,14 @@ function createGames(steamid, obj)::Games
 end
 
 function createFriends(steamid, obj)::Friends
-    friends = Friends(steamid)
-    tmp_friends = Vector{Friend}()
+    friends = Vector{Friend}()
 
     for friend in obj
         steamid = parse(Int64, friend.steamid)
-        push!(tmp_friends, Friend(steamid, friend.personaname))
+        push!(friends, Friend(steamid, friend.personaname))
     end
 
-    friends.friends = tmp_friends
-
-    return friends
+    return Friends(steamid, friends)
 end
 
 end # module

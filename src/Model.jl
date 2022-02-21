@@ -27,7 +27,7 @@ end
 Friend() = Friend(0, "")
 Friend(steamid) = Friend(steamid, "")
 
-mutable struct Friends
+struct Friends
     account_id::Int64
     friends::Vector{Friend}
 end
