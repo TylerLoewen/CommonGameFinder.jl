@@ -19,7 +19,7 @@ function getOwnedGames(steamid::Int64)
     )
 
     # We only care about the body, not any headers
-    return JSON3.read(res.body).response
+    return JSON3.read(res.body).response.games
 end
 
 function getFriendList(steamid::Int64)
