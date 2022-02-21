@@ -28,7 +28,7 @@ Friend() = Friend(0, "")
 Friend(steamid) = Friend(steamid, "")
 
 struct Friends
-    account_id::Int64
+    account_id::Int64 # Account that these friends belong to
     friends::Vector{Friend}
 end
 
