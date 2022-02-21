@@ -22,7 +22,7 @@ function getOwnedGames(steamid::Int64)
     return JSON3.read(res.body).response
 end
 
-function get_friend_list(steamid::Int64)::JSON3.Array
+function getFriendList(steamid::Int64)
     api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
@@ -30,13 +30,10 @@ function get_friend_list(steamid::Int64)::JSON3.Array
         "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=$api_key&steamid=$steamid&relationship=friend",
     )
 
-    friends = JSON3.read(r.body).friendslist.friends
-
-    # println("Friends: $friends")
-    return friends
+    return JSON3.read(r.body).friendslist.friends
 end
 
-function get_player_summaries(steamids::Vector{Int64})::JSON3.Array
+function getPlayerSummaries(steamids::Vector{Int64})
     api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
@@ -44,12 +41,7 @@ function get_player_summaries(steamids::Vector{Int64})::JSON3.Array
         "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=$api_key&steamids=$(join(steamids, ","))",
     )
 
-    player_summaries = JSON3.read(r.body).response.players
-
-    # println("player_summaries: $player_summaries")
-    return player_summaries
+    return JSON3.read(r.body).response.players
 end
-
-
 
 end # module

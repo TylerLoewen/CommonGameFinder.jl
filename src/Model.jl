@@ -1,6 +1,6 @@
 module Model
 
-export Game, Games
+export Game, Games, Friend, Friends
 
 struct Game
     appid::Int64
@@ -18,5 +18,21 @@ end
 
 Games() = Games(0, Dict{Int64,Game}())
 Games(account_id) = Games(account_id, Dict{Int64,Game}())
+
+struct Friend
+    steamid::Int64
+    personaname::String
+end
+
+Friend() = Friend(0, "")
+Friend(steamid) = Friend(steamid, "")
+
+mutable struct Friends
+    account_id::Int64
+    friends::Vector{Friend}
+end
+
+Friends() = Friends(0, Vector{Friend}())
+Friends(account_id) = Friends(account_id, Vector{Friend}())
 
 end # module
