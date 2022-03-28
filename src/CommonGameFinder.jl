@@ -59,12 +59,9 @@ function _createFriends(steamid, obj)::Friends
         push!(friends, f)
     end
 
-<<<<<<< HEAD
     return Friends(steamid, friends)
 end
 
-=======
->>>>>>> 8bb6083 (Fix)
 function main()
     # Get common appids of games between multiple accounts
     owned_games_1 = owned_games(Int64(SECRETS["STEAM_ACCOUNT_ID_1"]))
