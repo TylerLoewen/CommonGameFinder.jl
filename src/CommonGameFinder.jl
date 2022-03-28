@@ -58,8 +58,8 @@ function _createFriends(steamid, obj)::Friends
         )
         push!(friends, f)
     end
-end
 
+    return Friends(steamid, friends)
 end
 
 function main()
