@@ -4,13 +4,13 @@ using HTTP
 using JSON3
 using YAML
 
-using ..Service
+using ..CommonGameFinder
 using ..Model
 
 const SECRETS = YAML.load_file("./secrets.yaml")
 const RESPONSE_FORMAT = "json"
 
-function getOwnedGames(steamid::Int64)
+function _getOwnedGames(steamid::Int64)
     api_key = SECRETS["API_KEY"]
 
     res = HTTP.request(
@@ -22,7 +22,7 @@ function getOwnedGames(steamid::Int64)
     return JSON3.read(res.body).response.games
 end
 
-function getFriendList(steamid::Int64)
+function _getFriendList(steamid::Int64)
     api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
@@ -33,7 +33,7 @@ function getFriendList(steamid::Int64)
     return JSON3.read(r.body).friendslist.friends
 end
 
-function getPlayerSummaries(steamids::Vector{Int64})
+function _getPlayerSummaries(steamids::Vector{Int64})
     api_key = SECRETS["API_KEY"]
 
     r = HTTP.request(
