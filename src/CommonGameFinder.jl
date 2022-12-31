@@ -52,10 +52,7 @@ function _friends(steamid, obj)::Friends
     friends = Vector{Friend}()
 
     for friend in obj
-        f = Friend(
-            parse(Int64, friend.steamid),
-            friend.personaname,
-        )
+        f = Friend(parse(Int64, friend.steamid), friend.personaname)
         push!(friends, f)
     end
 
